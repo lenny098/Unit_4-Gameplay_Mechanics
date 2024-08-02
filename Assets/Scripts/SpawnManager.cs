@@ -14,7 +14,7 @@ public class SpawnManager : MonoBehaviour
     public float spawnRange;
     public float enemyCount;
 
-    private int waveCount = 2;
+    private int waveCount = 0;
     private float rocketSpawnOffset = 1;
     private int bossRound = 5;
     private float bossY = 0.8f;
@@ -53,8 +53,7 @@ public class SpawnManager : MonoBehaviour
 
     void SpawnPowerup()
     {
-        // GameObject powerupPrefab = powerupPrefabs[Random.Range(0, powerupPrefabs.Length)];
-        GameObject powerupPrefab = powerupPrefabs[2];
+        GameObject powerupPrefab = powerupPrefabs[Random.Range(0, powerupPrefabs.Length)];
         Instantiate(powerupPrefab, RandomPosition(), powerupPrefab.transform.rotation);
     }
 
