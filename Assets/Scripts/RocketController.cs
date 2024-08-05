@@ -1,14 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
 public class RocketController : MonoBehaviour
 {
-    private float speed = 10;
-    private float bound = 100;
+    [SerializeField]  float speed = 10;
+    [SerializeField] float bound = 100;
 
-    private Rigidbody rigidbody;
-    private GameObject player;
+    Rigidbody rigidbody;
+    GameObject player;
 
     // Start is called before the first frame update
     void Start()

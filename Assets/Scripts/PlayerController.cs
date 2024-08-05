@@ -1,29 +1,31 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
 public class PlayerController : MonoBehaviour
 {
-    public float speed;
-    public bool onGround = false;
+    [SerializeField] float speed;
 
-    public bool poweredUp = false;
-    public float powerupForce;
-    public float powerupDuration;
-    public GameObject powerupIndicator;
+    [Header("Knockback Powerup")]
+    [SerializeField] float powerupForce;
+    [SerializeField] float powerupDuration;
+    [SerializeField] GameObject powerupIndicator;
 
-    public bool smash = false;
-    // public float smashDistanceScale;
-    public float smashForce;
-    public float smashRadius;
-    public GameObject smashIndicator;
+    [Header("Smash Powerup")]
+    [SerializeField] float smashForce;
+    [SerializeField] float smashRadius;
+    [SerializeField] GameObject smashIndicator;
 
-    private Rigidbody rigidbody;
-    public GameObject focalPoint;
-    
-    public GameObject spawnManager;
+    [Header("References")]
+    [SerializeField] GameObject focalPoint;
+    [SerializeField] GameObject spawnManager;
 
-    private Vector3 indicatorOffset = new Vector3(0, -0.5f, 0);
+    Rigidbody rigidbody;
+    Vector3 indicatorOffset = new Vector3(0, -0.5f, 0);
+
+    bool onGround = false;
+    bool poweredUp = false;
+    bool smash = false;
 
     // Start is called before the first frame update
     void Start()
@@ -119,7 +121,6 @@ public class PlayerController : MonoBehaviour
 
                     Vector3 direction = (other.transform.position - transform.position).normalized;
 
-                    // Debug.Log($"Collied with {other.name}, while poweredUp is {poweredUp}");
                     enemyRigidbody.AddForce(direction * powerupForce, ForceMode.Impulse);
                 }
 
@@ -132,11 +133,6 @@ public class PlayerController : MonoBehaviour
                 foreach (var enemy in enemies)
                 {
                     Rigidbody enemyRigidbody = enemy.GetComponent<Rigidbody>();
-
-                    // Vector3 direction = (enemy.transform.position - transform.position).normalized;
-                    // float distance = Vector3.Distance(enemy.transform.position, transform.position);
-
-                    // enemyRigidbody.AddForce(direction * (smashDistanceScale / distance) * smashForce, ForceMode.Impulse);
 
                     enemyRigidbody.AddExplosionForce(smashForce, transform.position, smashRadius, 0, ForceMode.Impulse);
                 }

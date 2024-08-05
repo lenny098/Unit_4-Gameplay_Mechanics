@@ -1,30 +1,32 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
-    public GameObject[] enemyPrefabs;
-    public GameObject[] powerupPrefabs;
-    public GameObject bossPrefab;
+    [SerializeField] float spawnRange;
+    [SerializeField] int bossRound;
 
-    public GameObject rocketPrefab;
-    public GameObject player;
-    
-    public float spawnRange;
-    public float enemyCount;
+    [Header("Prefabs")]
+    [SerializeField] GameObject[] enemyPrefabs;
+    [SerializeField] GameObject[] powerupPrefabs;
+    [SerializeField] GameObject bossPrefab;
 
-    private int waveCount = 0;
-    private float rocketSpawnOffset = 1;
-    private int bossRound = 5;
-    private float bossY = 0.8f;
+    [SerializeField] GameObject rocketPrefab;
 
-    Vector3 RandomPosition()
+    [Header("References")]
+    [SerializeField] GameObject player;
+
+    int waveCount = 0;
+
+    float rocketSpawnOffset = 1;
+    float bossY = 0.8f;
+
+    Vector3 RandomPosition(float spawnY = 0)
     {
         float spawnX = Random.Range(-spawnRange, spawnRange);
         float spawnZ = Random.Range(-spawnRange, spawnRange);
 
-        return new Vector3(spawnX, 0, spawnZ);
+        return new Vector3(spawnX, spawnY, spawnZ);
     }
 
     void SpawnEnemies(int count)
@@ -40,9 +42,7 @@ public class SpawnManager : MonoBehaviour
     {
         for (int i = 0; i < count; i++)
         {
-            Vector3 position = RandomPosition();
-            position.y = bossY;
-            Instantiate(bossPrefab, position, bossPrefab.transform.rotation);
+            Instantiate(bossPrefab, RandomPosition(bossY), bossPrefab.transform.rotation);
         }
     }
 
@@ -85,13 +85,13 @@ public class SpawnManager : MonoBehaviour
         }
     }
 
-    IEnumerator SpawnRocketWaves()
+    IEnumerator SpawnRocketWaves(int waves = 2)
     {
-        SpawnRocketWave();
-
-        yield return new WaitForSeconds(1);
-
-        SpawnRocketWave();
+        for (int i = 0; i < waves; i++)
+        {
+            SpawnRocketWave();
+            yield return new WaitForSeconds(1);
+        }
     }
 
     public void SpawnRockets()
@@ -100,16 +100,10 @@ public class SpawnManager : MonoBehaviour
     }
     
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
     // Update is called once per frame
     void Update()
     {
-        enemyCount = GameObject.FindGameObjectsWithTag("Enemy").Length;
+        float enemyCount = GameObject.FindGameObjectsWithTag("Enemy").Length;
 
         if (enemyCount < 1)
         {

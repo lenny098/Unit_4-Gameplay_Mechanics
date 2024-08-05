@@ -1,17 +1,17 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
 public class EnemyController : MonoBehaviour
 {
-    public float speed;
-    public bool spawnMinions = false;
-    private float spawnRate = 5;
-    private float destoryY = -10;
+    [SerializeField] float speed;
+    [SerializeField] bool spawnMinions = false;
+    [SerializeField] float spawnRate;
 
-    private Rigidbody rigidbody;
-    private GameObject player;
-    private SpawnManager spawnManager;
+    float destoryY = -10;
+
+    Rigidbody rigidbody;
+    GameObject player;
+    SpawnManager spawnManager;
 
     void SpawnMinion()
     {

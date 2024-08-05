@@ -365,6 +365,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15e78783f3b040e4cba49f6b1ef8097e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  spawnRange: 9
+  bossRound: 5
   enemyPrefabs:
   - {fileID: 6499700283639411185, guid: 2f2eb769105800444addcab2bb268155, type: 3}
   - {fileID: 3365682102592028193, guid: 4d3ad9c3171de374abeede1dddf7a138, type: 3}
@@ -375,8 +377,6 @@ MonoBehaviour:
   bossPrefab: {fileID: 6036106198794156576, guid: bdea7d79225e7294c8547830f1ea88e3, type: 3}
   rocketPrefab: {fileID: 5218150165843777598, guid: 1453523e11e61994e9db1c4ee42ab8b7, type: 3}
   player: {fileID: 1836190618}
-  spawnRange: 9
-  enemyCount: 0
 --- !u!4 &1209049017
 Transform:
   m_ObjectHideFlags: 0
@@ -837,12 +837,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 1
-  onGround: 0
-  poweredUp: 0
   powerupForce: 20
   powerupDuration: 10
   powerupIndicator: {fileID: 1523261084}
-  smash: 0
   smashForce: 40
   smashRadius: 9
   smashIndicator: {fileID: 539134178}
