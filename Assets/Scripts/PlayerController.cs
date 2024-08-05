@@ -126,6 +126,8 @@ public class PlayerController : MonoBehaviour
 
                 break;
             case "Ground":
+                if (onGround) break;
+
                 onGround = true;
 
                 GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
