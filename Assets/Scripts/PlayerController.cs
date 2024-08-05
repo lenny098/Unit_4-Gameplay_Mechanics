@@ -4,6 +4,8 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerController : MonoBehaviour
 {
+    public static PlayerController Instance;
+
     [SerializeField] float speed;
 
     [Header("Knockback Powerup")]
@@ -18,7 +20,6 @@ public class PlayerController : MonoBehaviour
 
     [Header("References")]
     [SerializeField] GameObject focalPoint;
-    [SerializeField] GameObject spawnManager;
 
     Rigidbody rigidbody;
     Vector3 indicatorOffset = new Vector3(0, -0.5f, 0);
@@ -26,6 +27,17 @@ public class PlayerController : MonoBehaviour
     bool onGround = false;
     bool poweredUp = false;
     bool smash = false;
+
+    private void Awake()
+    {
+        if (Instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -92,7 +104,7 @@ public class PlayerController : MonoBehaviour
 
                 break;
             case "Rockets":
-                spawnManager.GetComponent<SpawnManager>().SpawnRockets();
+                SpawnManager.Instance.SpawnRockets();
 
                 Destroy(other.gameObject);
 

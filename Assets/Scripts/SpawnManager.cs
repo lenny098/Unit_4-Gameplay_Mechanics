@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
+    public static SpawnManager Instance;
+
     [SerializeField] float spawnRange;
     [SerializeField] int bossRound;
 
@@ -12,9 +14,6 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] GameObject bossPrefab;
 
     [SerializeField] GameObject rocketPrefab;
-
-    [Header("References")]
-    [SerializeField] GameObject player;
 
     int waveCount = 0;
 
@@ -73,10 +72,12 @@ public class SpawnManager : MonoBehaviour
 
     void SpawnRocketWave()
     {
+        Vector3 playerPosition = PlayerController.Instance.transform.position;
+
         foreach (var enemy in GameObject.FindGameObjectsWithTag("Enemy"))
         {
-            Vector3 directon = (enemy.transform.position - player.transform.position).normalized;
-            Vector3 position = player.transform.position + directon * rocketSpawnOffset;
+            Vector3 directon = (enemy.transform.position - playerPosition).normalized;
+            Vector3 position = playerPosition + directon * rocketSpawnOffset;
 
             GameObject rocket = Instantiate(rocketPrefab, position, rocketPrefab.transform.rotation);
 
@@ -98,7 +99,17 @@ public class SpawnManager : MonoBehaviour
     {
         StartCoroutine(SpawnRocketWaves());
     }
-    
+
+    private void Awake()
+    {
+        if (Instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+    }
 
     // Update is called once per frame
     void Update()

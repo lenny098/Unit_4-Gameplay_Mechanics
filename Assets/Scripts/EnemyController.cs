@@ -10,20 +10,16 @@ public class EnemyController : MonoBehaviour
     float destoryY = -10;
 
     Rigidbody rigidbody;
-    GameObject player;
-    SpawnManager spawnManager;
 
     void SpawnMinion()
     {
-        spawnManager.SpawnMinion();
+        SpawnManager.Instance.SpawnMinion();
     }
 
     // Start is called before the first frame update
     void Start()
     {
         rigidbody = GetComponent<Rigidbody>();
-        player = GameObject.Find("Player");
-        spawnManager = GameObject.Find("Spawn Manager").GetComponent<SpawnManager>();
 
         if (spawnMinions)
         {
@@ -34,7 +30,7 @@ public class EnemyController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Vector3 direction = (player.transform.position - transform.position).normalized;
+        Vector3 direction = (PlayerController.Instance.transform.position - transform.position).normalized;
         rigidbody.AddForce(direction * speed);
 
         if (transform.position.y < destoryY)
