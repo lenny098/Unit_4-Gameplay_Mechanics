@@ -7,20 +7,35 @@ public class EnemyController : MonoBehaviour
     [SerializeField] bool spawnMinions = false;
     [SerializeField] float spawnRate;
 
-    float destoryY = -10;
-
     Rigidbody rigidbody;
+    float destoryY;
 
     void SpawnMinion()
     {
         SpawnManager.Instance.SpawnMinion();
     }
 
+    void Move()
+    {
+        Vector3 direction = (PlayerController.Instance.transform.position - transform.position).normalized;
+        rigidbody.AddForce(direction * speed);
+    }
+
+    void DestroyOutOfBounds()
+    {
+        Destroy(gameObject);
+        CancelInvoke("SpawnMinion");
+    }
+
+    private void Awake()
+    {
+        rigidbody = GetComponent<Rigidbody>();
+        destoryY = GameObject.Find("Destroy Bound").GetComponent<Renderer>().bounds.center.y;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
-        rigidbody = GetComponent<Rigidbody>();
-
         if (spawnMinions)
         {
             InvokeRepeating("SpawnMinion", spawnRate, spawnRate);
@@ -30,13 +45,11 @@ public class EnemyController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Vector3 direction = (PlayerController.Instance.transform.position - transform.position).normalized;
-        rigidbody.AddForce(direction * speed);
+        Move();
 
         if (transform.position.y < destoryY)
         {
-            Destroy(gameObject);
-            CancelInvoke();
+            DestroyOutOfBounds();
         }
     }
 }
