@@ -8,7 +8,6 @@ public class EnemyController : MonoBehaviour
     [SerializeField] float spawnRate;
 
     Rigidbody rigidbody;
-    float destoryY;
 
     void SpawnMinion()
     {
@@ -30,7 +29,6 @@ public class EnemyController : MonoBehaviour
     private void Awake()
     {
         rigidbody = GetComponent<Rigidbody>();
-        destoryY = GameObject.Find("Destroy Bound").GetComponent<Renderer>().bounds.center.y;
     }
 
     // Start is called before the first frame update
@@ -46,10 +44,18 @@ public class EnemyController : MonoBehaviour
     void Update()
     {
         Move();
+    }
 
-        if (transform.position.y < destoryY)
+    private void OnTriggerEnter(Collider other)
+    {
+        switch (other.name)
         {
-            DestroyOutOfBounds();
+            case "Enemy Destroy Bound":
+                DestroyOutOfBounds();
+
+                break;
+            default:
+                break;
         }
     }
 }
