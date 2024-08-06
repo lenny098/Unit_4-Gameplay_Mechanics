@@ -376,7 +376,6 @@ MonoBehaviour:
   - {fileID: 1170346151422329554, guid: c630778eed280f6488569f1c36f49e9c, type: 3}
   bossPrefab: {fileID: 6036106198794156576, guid: bdea7d79225e7294c8547830f1ea88e3, type: 3}
   rocketPrefab: {fileID: 5218150165843777598, guid: 1453523e11e61994e9db1c4ee42ab8b7, type: 3}
-  player: {fileID: 1836190618}
 --- !u!4 &1209049017
 Transform:
   m_ObjectHideFlags: 0
@@ -844,7 +843,6 @@ MonoBehaviour:
   smashRadius: 9
   smashIndicator: {fileID: 539134178}
   focalPoint: {fileID: 714657839}
-  spawnManager: {fileID: 1209049015}
 --- !u!1001 &1950494220
 PrefabInstance:
   m_ObjectHideFlags: 0
