@@ -3,13 +3,17 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class RocketController : MonoBehaviour
 {
-    [SerializeField]  float speed = 10;
-    [SerializeField] float bound = 100;
+    [SerializeField]  float speed;
 
     Rigidbody rigidbody;
 
-    // Start is called before the first frame update
-    void Start()
+    void Move()
+    {
+        Vector3 direction = (transform.position - PlayerController.Instance.transform.position).normalized;
+        rigidbody.AddForce(direction * speed);
+    }
+
+    void Awake()
     {
         rigidbody = GetComponent<Rigidbody>();
     }
@@ -17,22 +21,25 @@ public class RocketController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Vector3 playerPosition = PlayerController.Instance.transform.position;
+        Move();
+    }
 
-        Vector3 direction = (transform.position - playerPosition).normalized;
-        rigidbody.AddForce(direction * speed);
-
-        if (Vector3.Distance(transform.position, playerPosition) > bound)
+    private void OnTriggerExit(Collider other)
+    {
+        switch (other.name)
         {
-            Destroy(gameObject);
+            case "Rocket Destroy Bound":
+                Destroy(gameObject);
+
+                break;
+            default:
+                break;
         }
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        GameObject other = collision.gameObject;
-
-        switch (other.tag)
+        switch (collision.gameObject.tag)
         {
             case "Enemy":
                 Destroy(gameObject);
