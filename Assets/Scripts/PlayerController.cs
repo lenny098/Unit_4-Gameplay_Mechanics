@@ -7,13 +7,17 @@ public class PlayerController : MonoBehaviour
     public static PlayerController Instance;
 
     [SerializeField] float speed;
+    [SerializeField] float powerupDuration;
 
     [Header("Knockback Powerup")]
-    [SerializeField] float powerupForce;
-    [SerializeField] float powerupDuration;
-    [SerializeField] GameObject powerupIndicator;
+    [SerializeField] float knockbackForce;
+    [SerializeField] GameObject knockbackIndicator;
 
     [Header("Smash Powerup")]
+    [SerializeField] KeyCode smashKey;
+    [SerializeField] float smashY;
+    [SerializeField] float smashUpwardSpeed;
+    [SerializeField] float smashDownwardSpeed;
     [SerializeField] float smashForce;
     [SerializeField] float smashRadius;
     [SerializeField] GameObject smashIndicator;
@@ -21,12 +25,80 @@ public class PlayerController : MonoBehaviour
     [Header("References")]
     [SerializeField] GameObject focalPoint;
 
+    // Private variables
     Rigidbody rigidbody;
-    Vector3 indicatorOffset = new Vector3(0, -0.5f, 0);
 
-    bool onGround = false;
-    bool poweredUp = false;
-    bool smash = false;
+    bool withKnockback = false;
+    bool withSmash = false;
+    bool withPowerUp { get { return withKnockback || withSmash; } }
+
+    bool isSmashing = false;
+    bool isMovingUpward = false;
+
+    void MovePlayer()
+    {
+        float verticalInput = Input.GetAxis("Vertical");
+        rigidbody.AddForce(focalPoint.transform.forward * verticalInput * speed);
+    }
+
+    void MoveIndicators()
+    {
+        GameObject[] indicators = new GameObject[] { knockbackIndicator, smashIndicator };
+
+        foreach (var indicator in indicators)
+        {
+            indicator.transform.position = new Vector3(
+                transform.position.x,
+                indicator.transform.position.y,
+                transform.position.z
+            );
+        }
+    }
+
+    IEnumerator KnockbackCountdown()
+    {
+        withKnockback = true;
+        knockbackIndicator.SetActive(true);
+
+        yield return new WaitForSeconds(powerupDuration);
+
+        withKnockback = false;
+        knockbackIndicator.SetActive(false);
+    }
+
+    IEnumerator SmashCountdown()
+    {
+        withSmash = true;
+        smashIndicator.SetActive(true);
+
+        yield return new WaitForSeconds(powerupDuration);
+
+        withSmash = false;
+        smashIndicator.SetActive(false);
+    }
+
+    void StartSmash()
+    {
+        isSmashing = true;
+        isMovingUpward = true;
+    }
+
+    void Smashing()
+    {
+        if (isMovingUpward)
+        {
+            transform.position += Vector3.up * Time.deltaTime * smashUpwardSpeed;  
+        }
+        else // Downward
+        {
+            transform.position -= Vector3.up * Time.deltaTime * smashDownwardSpeed;
+        }
+
+        if (transform.position.y >= smashY)
+        {
+            isMovingUpward = false;
+        }
+    }
 
     private void Awake()
     {
@@ -37,81 +109,47 @@ public class PlayerController : MonoBehaviour
         }
 
         Instance = this;
-    }
 
-    // Start is called before the first frame update
-    void Start()
-    {
         rigidbody = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        float verticalInput = Input.GetAxis("Vertical");
-        rigidbody.AddForce(focalPoint.transform.forward * verticalInput * speed);
+        MovePlayer();
+        MoveIndicators();
 
-        // Indicators moves with player
-        powerupIndicator.transform.position = transform.position + indicatorOffset;
-        smashIndicator.transform.position = transform.position + indicatorOffset;
-
-        if (onGround && smash && Input.GetKeyDown(KeyCode.Space))
+        if (withSmash && !isSmashing && Input.GetKeyDown(smashKey))
         {
-            StartCoroutine(Smash());
+            StartSmash();
         }
-    }
 
-    IEnumerator PowerupCountdown()
-    {
-        poweredUp = true;
-        powerupIndicator.gameObject.SetActive(true);
-
-        yield return new WaitForSeconds(powerupDuration);
-
-        poweredUp = false;
-        powerupIndicator.gameObject.SetActive(false);
-    }
-
-    IEnumerator SmashCountdown()
-    {
-        smash = true;
-        smashIndicator.gameObject.SetActive(true);
-
-        yield return new WaitForSeconds(powerupDuration);
-
-        smash = false;
-        smashIndicator.gameObject.SetActive(false);
-    }
-
-    IEnumerator Smash()
-    {
-        rigidbody.AddForce(Vector3.up * 30, ForceMode.Impulse);
-        onGround = false;
-
-        yield return new WaitForSeconds(0.2f);
-
-        rigidbody.AddForce(Vector3.down * 80, ForceMode.Impulse);
+        if (isSmashing)
+        {
+            Smashing();
+        }
     }
 
     private void OnTriggerEnter(Collider other)
     {
         switch (other.tag)
         {
-            case "Powerup":
-                Destroy(other.gameObject);
+            case "Powerup": // Knockback
+                if (withPowerUp) break;
 
-                StartCoroutine(PowerupCountdown());
+                Destroy(other.gameObject);
+                StartCoroutine(KnockbackCountdown());
 
                 break;
             case "Rockets":
-                SpawnManager.Instance.SpawnRockets();
-
                 Destroy(other.gameObject);
+                SpawnManager.Instance.SpawnRockets();
 
                 break;
             case "Smash":
-                Destroy(other.gameObject);
+                if (withPowerUp) break;
 
+                Destroy(other.gameObject);
                 StartCoroutine(SmashCountdown());
 
                 break;
@@ -127,20 +165,17 @@ public class PlayerController : MonoBehaviour
         switch (other.tag)
         {
             case "Enemy":
-                if (poweredUp)
-                {
-                    Rigidbody enemyRigidbody = other.GetComponent<Rigidbody>();
+                if (!withKnockback) break;
 
-                    Vector3 direction = (other.transform.position - transform.position).normalized;
+                Rigidbody otherRigidbody = other.GetComponent<Rigidbody>();
+                Vector3 direction = (other.transform.position - transform.position).normalized;
 
-                    enemyRigidbody.AddForce(direction * powerupForce, ForceMode.Impulse);
-                }
+                otherRigidbody.AddForce(direction * knockbackForce, ForceMode.Impulse);
 
                 break;
             case "Ground":
-                if (onGround) break;
-
-                onGround = true;
+                if (!isSmashing) break;
+                isSmashing = false;
 
                 GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
 
