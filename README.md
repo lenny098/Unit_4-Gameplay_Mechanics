@@ -14,3 +14,8 @@ In this Unit, you will program an arcade-style Sumo battle with the objective of
     - Create a new powerup that allows the player to hop up into the air and smash down onto the ground, sending any enemies nearby flying away from the player. Ideally, the closer an enemy is, the more it should be impacted by the smash.
 - [x] **Expert:** Boss battle
     - After a certain number of waves, program a mini “boss battle,” where the boss has some completely new abilities. For example, maybe the boss can fire projectiles at you, maybe it is extremely agile, or maybe it occasionally generates little minions that come after you.
+
+---
+
+### WebGL Build
+[Unity Play](https://play.unity.com/en/games/5bedb951-1eef-4775-823c-68e0b5ff139b/webgl-builds)
