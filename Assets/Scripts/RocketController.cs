@@ -9,8 +9,7 @@ public class RocketController : MonoBehaviour
 
     void Move()
     {
-        Vector3 direction = (transform.position - PlayerController.Instance.transform.position).normalized;
-        rigidbody.AddForce(direction * speed);
+        rigidbody.AddRelativeForce(Vector3.forward * speed);
     }
 
     void Awake()
